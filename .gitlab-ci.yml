@@ -1,0 +1,20 @@
+stages:
+  - check
+  - build
+  - deploy
+
+image: python:3.9.7
+
+variables:
+  NAME: yandex-products-api
+
+include:
+  - project: gosdep/kube-env
+    ref: main
+    file: /gitlab-ci-templates/.gitlab-ci-deploy.yml
+
+lint:
+  script:
+    - "make install lint"
+  stage: "check"
+  allow_failure: true

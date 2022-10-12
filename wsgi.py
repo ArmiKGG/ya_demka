@@ -1,0 +1,1 @@
+from flaska import app
