@@ -16,3 +16,19 @@ headers = {
     "accept": "application/json, text/plain, */*",
     "accept-language": "ru,en;q=0.9"
 }
+
+
+string_cookie = 'is_gdpr=0; is_gdpr_b=CJ2cGhC5jwE=; gdpr=0; _ym_uid=1664162086643216049; _ym_d=1665699386; _ym_isad=1; yandexuid=8932436291665699385; yuidss=8932436291665699385; ymex=1981059385.yrts.1665699385#1981059385.yrtsi.1665699385; spravka=dD0xNjY1Njk5NTgwO2k9OTEuMTg5LjI0Mi4yMzc7RD05NzYzREJDQjdFNTEyOUEzMEM4M0VEMDcwMzc5OUUwODhBRkM2Rjk5ODZCRDREQkMxNzQwNUYyMEU0OUYzOTZBOEQ5MkQ4MzM7dT0xNjY1Njk5NTgwNDUwNTY3Nzk1O2g9MTI3ZGM1ODBhMmJlYzAwNzk0ZWQ1MGFjYjQ0ZmU2OGM=; _yasc=hy/1VnzudO1qIgKrPXW7SE4iBtYGgM9kAHiJGCoZ/bFEBoyUDqma+NOKRbnebQ==; _ym_visorc=b; yp=1981063732.udn.cDphcm1hbnNsYXB0b3BAZ21haWwuY29t; L=aiACdkZAUHpnTH5KTWZrDFx8YlhSVUILACUlVRk+BVAFMR4ccSAEES4HFhQ4Pg==.1665703732.15129.333190.2cabdec6a4797fadad5b7ad41fe067c2; yandex_login=armanslaptop@gmail.com; ys=udn.cDphcm1hbnNsYXB0b3BAZ21haWwuY29t#c_chck.1935191041'
+
+
+cookie_2 = {}
+
+for cook in string_cookie.split("; "):
+    cookie_2[cook.split("=")[0]] = cook.split("=")[1]
+
+
+headers_2 = {
+    "accept": "text/html,application/json,text/plain,*/*",
+    "accept-language": "ru,en;q=0.9",
+    "cookie": string_cookie
+}
