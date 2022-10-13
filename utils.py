@@ -89,8 +89,13 @@ def requesting_ya_products(page: int, txt: str, calc_suggestions=True):
     """Set direct_suggetsion and suggest_products to empty lists"""
     direct_suggestions, suggest_products = [], []
     """Make request to yandex product api"""
-    rpp = requests.get(url.format(page, txt), headers=headers, cookies=cookie).json()
-
+    rpp = requests.get(url.format(page, txt), headers=headers, cookies=cookie)
+    if "captcha" in rpp.text.lower():
+        rpp = requests.get(url.format(page, txt), headers=headers_2, cookies=cookie_2)
+    if "captcha" in rpp.text.lower():
+        print("captcha", url.format(page, txt))
+        return [], [], [], [], []
+    rpp = rpp.json()
     """Parsing results"""
     specs = get_specs_price_min_max(rpp)
     items_with_category = fix_category(get_category(rpp), get_offers(rpp))
