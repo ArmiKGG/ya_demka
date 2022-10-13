@@ -9,11 +9,11 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 80
+EXPOSE 8080
 CMD gunicorn --worker-class gthread \
   --preload \
   --workers 1 \
   --threads 4 \
-  --bind 0.0.0.0:80 \
+  --bind 0.0.0.0:8080 \
   --timeout 600 \
   wsgi:app

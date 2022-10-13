@@ -1,7 +1,7 @@
 import requests
 from configs import *
 
-url = "https://yandex.ru/products/api/rr/search?order=dpop&page=1&text={}&with_rich_media_gallery=0"
+url = "https://yandex.ru/products/api/rr/search?order=dpop&page={}&text={}&with_rich_media_gallery=0"
 
 
 def get_specs_price_min_max(object_resp):
@@ -85,20 +85,21 @@ def suggestion(suggest):
     return direct_suggestions, suggest_products
 
 
-def requesting_ya_products(txt: str, calc_suggestions=True):
-    rpp = requests.get(url.format(txt), headers=headers, cookies=cookie).json()
+def requesting_ya_products(page: int, txt: str, calc_suggestions=True):
+    """Set direct_suggetsion and suggest_products to empty lists"""
+    direct_suggestions, suggest_products = [], []
+    """Make request to yandex product api"""
+    rpp = requests.get(url.format(page, txt), headers=headers, cookies=cookie).json()
+
+    """Parsing results"""
     specs = get_specs_price_min_max(rpp)
     items_with_category = fix_category(get_category(rpp), get_offers(rpp))
     skus = get_items_skus(rpp)
 
-    payload = {"specification": specs,
-               "offers": items_with_category,
-               "skus": skus}
-
     if calc_suggestions:
+        """request to calc suggestion with text and suggested items"""
         suggestions = requests.get(f"https://yandex.ru/suggest-market/suggest-market-new?srv=goods&platform=desktop"
                                    f"&format=v2&svg=0&part={txt}&pos=0", headers=headers, cookies=cookie).json()
         direct_suggestions, suggest_products = suggestion(suggestions)
-        payload["suggestions"] = direct_suggestions
-        payload["suggest_items"] = suggest_products
-    return payload
+    return items_with_category, skus, specs, direct_suggestions, suggest_products
+

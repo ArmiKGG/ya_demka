@@ -1,1 +1,1 @@
-from flaska import app
+from server import app
