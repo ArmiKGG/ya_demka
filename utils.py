@@ -1,3 +1,5 @@
+import time
+
 import requests
 from configs import *
 
@@ -90,10 +92,11 @@ def requesting_ya_products(page: int, txt: str, calc_suggestions=True):
     direct_suggestions, suggest_products = [], []
     """Make request to yandex product api"""
     rpp = requests.get(url.format(page, txt), headers=headers, cookies=cookie)
+    time.sleep(1)
     if "captcha" in rpp.text.lower():
         rpp = requests.get(url.format(page, txt), headers=headers_2, cookies=cookie_2)
     if "captcha" in rpp.text.lower():
-        print("captcha", url.format(page, txt))
+        print("captcha", rpp.text[:100], flush=True)
         return [], [], [], [], []
     rpp = rpp.json()
     """Parsing results"""

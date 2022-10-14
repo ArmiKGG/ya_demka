@@ -11,10 +11,16 @@ cookie = {'yandexuid': '2801698381655450086', ' yuidss': '2801698381655450086', 
           ' ys': 'svt.1#def_bro.1#udn.cDpraXJpbGxAZGV2anMucnU%3D#wprid.1657466382310092-11583376320511124606-sas6-5246-13c-sas-l7-balancer-8080-BAL-5934#ybzcc.ru#newsca.native_cache',
           ' yp': '1686986088.cld.1955450#1972752782.udn.cDpraXJpbGxAZGV2anMucnU%3D#1687344637.ygu.1#1673234334.szm.2:1440x900:1440x800#1660144743.csc.1#1971080131.multib.1#1971080256.2fa.1#1657616503.clh.1955452#1657473060.gpauto.59_93895%3A30_315636%3A100000%3A3%3A1657465860#1657952529.mcv.0#1657952529.mcl.1ygm49n#1657468131.rnwcst.3'}
 
+first_cookie = ""
+
+for key, cok in cookie.items():
+    first_cookie += f"{key}={cok}; "
+first_cookie = first_cookie.strip()
 
 headers = {
     "accept": "application/json, text/plain, */*",
-    "accept-language": "ru,en;q=0.9"
+    "accept-language": "ru,en;q=0.9",
+    "cookie": first_cookie
 }
 
 
