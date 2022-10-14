@@ -3,11 +3,10 @@
 Yandex Products API
 """
 import gc
-import pprint
-
 from utils import *
 from flask import Flask, request, make_response, jsonify
 from flask_restful import Api, Resource
+
 gc.enable()
 
 app = Flask(__name__)
@@ -46,36 +45,48 @@ class Items(Resource):
     def post(self):
         params = request.get_json()
         txt = params.get("query")
+        page = params.get("page")
         if not txt:
             return make_response(
                 corsify_actual_response(jsonify({"status": False, "message": "No query"})), 400)
 
-        ya_product_values = requesting_ya_products(txt)
-        specs = ya_product_values["specification"]
-        suggestions = ya_product_values["suggestions"]
-        suggested_items = ya_product_values["suggest_items"]
-        if not ya_product_values["offers"] and ya_product_values["suggestions"]:
-            for sug_query in ya_product_values["suggestions"]:
-                ya_product_values = requesting_ya_products(sug_query, False)
-                specs += ya_product_values["specification"]
-                if ya_product_values["offers"]:
-                    break
-        pprint.pprint(ya_product_values)
-        if not ya_product_values["offers"] and ya_product_values["skus"]:
-            for sku in ya_product_values["skus"]:
-                new_query = sku.get("title")
-                if new_query:
-                    ya_product_values = requesting_ya_products(new_query)
-                    specs += ya_product_values["specification"]
-                    suggestions += ya_product_values["suggestions"]
-                    suggested_items += ya_product_values["suggest_items"]
-                if ya_product_values["offers"]:
-                    break
-        ya_product_values["specification"] = specs
-        ya_product_values["suggestions"] = suggestions
-        ya_product_values["suggest_items"] = suggested_items
-        pprint.pprint(ya_product_values)
-        return make_response(corsify_actual_response(jsonify(ya_product_values)), 200)
+        all_items_with_category, all_skus, all_specs, \
+        all_direct_suggestions, all_suggest_products = [], [], [], [], []
+        for i in range(1, int(page) + 1):
+            if i != 1:
+                items_with_category, skus, specs, \
+                direct_suggestions, suggest_products = requesting_ya_products(i, txt, False)
+                all_items_with_category += items_with_category
+                all_skus += skus
+                all_specs += specs
+                all_direct_suggestions += direct_suggestions
+                all_suggest_products += suggest_products
+            else:
+                items_with_category, skus, specs, \
+                direct_suggestions, suggest_products = requesting_ya_products(i, txt)
+                all_items_with_category += items_with_category
+                all_skus += skus
+                all_specs += specs
+                all_direct_suggestions += direct_suggestions
+                all_suggest_products += suggest_products
+            if all_direct_suggestions:
+                for sub in all_direct_suggestions:
+                    items_with_category, skus, specs, \
+                    direct_suggestions, suggest_products = requesting_ya_products(i, sub)
+                    all_items_with_category += items_with_category
+                    all_skus += skus
+                    all_specs += specs
+                    all_suggest_products += suggest_products
+
+            all_skus = [dict(t) for t in {tuple(d.items()) for d in all_skus}]
+            all_items_with_category = [dict(t) for t in {tuple(d.items()) for d in all_items_with_category}]
+            all_specs = [dict(t) for t in {tuple(d.items()) for d in all_specs}]
+            all_suggest_products = [dict(t) for t in {tuple(d.items()) for d in all_suggest_products}]
+        return make_response(corsify_actual_response(jsonify({"offers": all_items_with_category,
+                                                              "skus": all_skus,
+                                                              "specification": all_specs,
+                                                              "suggestions": all_direct_suggestions,
+                                                              "suggest_items": all_suggest_products})), 200)
 
 
 api.add_resource(Health, "/api/", "/api/health")

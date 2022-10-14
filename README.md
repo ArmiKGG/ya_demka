@@ -4,7 +4,8 @@
 curl --location --request POST 'http://127.0.0.1:80/api/items' \
 --header 'Content-Type: application/json' \
 --data-raw '{
-    "query": "iphone xs max"
+    "query": "iphone xs max",
+    "page": 3
 }'
 ~~~
 
